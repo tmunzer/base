@@ -4,15 +4,12 @@ var path = require('path');
 var express = require('express');
 var morgan = require('morgan')
 var parseurl = require('parseurl');
-//var session = require('express-session');
+var bodyParser = require('body-parser');
+var session = require('express-session');
 var favicon = require('serve-favicon');
-
 
 global.console = require('winston');
 console.level = 'debug';
-
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 
 var events = require('events');
 global.eventEmitter = new events.EventEmitter();
@@ -20,25 +17,15 @@ global.eventEmitter = new events.EventEmitter();
 var app = express();
 app.use(morgan('combined'))
 
-global.session = require("express-session")({
+// Use express-session middleware for express
+app.use(session({
   secret: 'Aerohive Identity Ref APP Secret',
   resave: true,
   saveUninitialized: true,
-  //defines how long the session will live in milliseconds. After that, the cookie is invalidated and will need to be set again.
-  duration: 5 * 60 * 1000,
-  // allows users to lengthen their session by interacting with the site
-  activeDuration: 60 * 60 * 1000,
-  //prevents browser JavaScript from accessing cookies.
-  httpOnly: true,
-  //ensures cookies are only used over HTTPS
-  secure: true,
-  //deletes the cookie when the browser is closed. Ephemeral cookies are particularly important if you your app lends itself to use on public computers.
-  ephemeral: true
-});
-
-// Use express-session middleware for express
-app.use(session); ;
-
+  cookie: {
+    maxAge: 30 * 60 * 1000 // 30 minutes
+  }
+})); ;
 
 
 // view engine setup
@@ -50,7 +37,6 @@ app.set('view engine', 'pug');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components',  express.static(appRoot + '/bower_components'));
 
