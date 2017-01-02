@@ -1,4 +1,3 @@
-
 var path = require('path');
 
 var express = require('express');
@@ -19,7 +18,7 @@ app.use(morgan('combined'))
 
 // Use express-session middleware for express
 app.use(session({
-  secret: 'Aerohive Identity Ref APP Secret',
+  secret: 'dsHhCAyYdqYAu25Km5EtkLMZm7XD',
   resave: true,
   saveUninitialized: true,
   cookie: {
