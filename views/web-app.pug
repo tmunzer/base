@@ -4,140 +4,144 @@ html
         title= title
         meta(name="viewport" content="width=device-width, initial-scale=1")
 
-        script(src="/i18n/web-app/en.js")
-        script(src="/i18n/web-app/fr.js")
-
-        link(rel="stylesheet" href="/bower_components/intl-tel-input/build/css/intlTelInput.css")
         link(rel="stylesheet" href="/bower_components/material-design-icons/iconfont/material-icons.css")
-        link(rel="stylesheet" href="/bower_components/angular-material-data-table/dist/md-data-table.min.css")
         link(rel="stylesheet" href="/bower_components/angular-material/angular-material.min.css")
+        link(rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css")
         link(rel='stylesheet' href='/css/ah-tm.dashboard.css')
         link(rel='stylesheet' href='/css/ah-tm.tags.css')
         link(rel='stylesheet' href='/css/ah-tm.cards.css')
         link(rel='stylesheet' href='/css/ah-tm.md-table.css')
         link(rel='stylesheet' href='/css/ah-tm.md-list.css')
+        link(rel='stylesheet' href='/css/ah-tm.header.css')
+        link(rel='stylesheet' href='/css/ah-tm.label.css')
+        link(rel='stylesheet' href='/css/ah-tm.datetime.css')
+        
+    body(ng-app="gak" ng-controller="AppCtrl").icons-docs
+        div(id="loading")
+        header.md-page-header
+            div.header
+            md-toolbar.header.fixed(layout='row')
+                h1.logo.md-toolbar-tools
+                    if custom && custom.logo && custom.logo.enable
+                        img(src=custom.logo.header class="ah-logo")
+                    else
+                        img(src="/images/logo_w.png" alt="Aerohive")
+                span(flex)
+                div(style="display:flex; padding-right: 20px")
+                    if ! custom || ! custom.app || ! custom.app.enable
+                        md-menu(style="margin: auto;")
+                            md-button(aria-label="language" ng-click="openMenu($mdOpenMenu, $event)" style="min-width: 20px;")
+                                md-tooltip(md-direction="bottom" md-visible="tooltipVisible") {{"language" | translate}}
+                                md-icon(class="material-icons" aria-label="language") language
+                            md-menu-content
+                                md-menu-item
+                                    md-button(ng-click="translate('en')")
+                                        span(style="display: inline-flex; margin-right: 5px;")
+                                            div.iti-flag.gb
+                                        span English
+                                md-menu-item
+                                    md-button(ng-click="translate('fr')")
+                                        span(style="display: inline-flex; margin-right: 5px;")
+                                            div.iti-flag.fr
+                                        span Francais                                
+                    md-button(aria-label="logout" href="/logout/" style="margin: auto;")                        
+                        md-icon(class="material-icons" aria-label="menu") exit_to_app
+                        span {{"logout" | translate}}
 
-        script(src="/bower_components/jquery/dist/jquery.min.js")
+            
+        div(id="main")
+            md-content.panel(md-whiteframe="7" layout="column")
+                md-toolbar.md-hue-2
+                    div.md-toolbar-tools 
+                        if custom && custom.app && custom.app.enable
+                            h2=custom.app.title
+                        else
+                            h2(translate="title")
+                div(ng-hide="isWorking" style="background-color: #{{color}}; height: 5px; width: 100%")
+                md-progress-linear(ng-show="isWorking" md-mode="indeterminate" class="md-accent")
+                md-content(style="padding: 0 40px 10px 40px" )                
+                    md-list.flex
+                        md-subheader.md-no-sticky 
+                            if custom && custom.app && custom.app.enable
+                                h2=custom.app.text
+                            else
+                                h2(translate="header")
+                        md-divider
+                        if custom && custom.app && custom.app.enable
+                            for row in custom.app.rows
+                                md-list-item 
+                                    i.material-icons.md-avatar-icon(style="min-width: 25px;")=row.icon
+                                    div.md-list-item-text(layout="column")                        
+                                        span=row.text
+                                md-divider
+                        else
+                            md-list-item 
+                                i.material-icons.md-avatar-icon(style="min-width: 25px;") business
+                                div.md-list-item-text(layout="column")                        
+                                    span(translate="one")
+                            md-divider
+                            md-list-item       
+                                i.material-icons.md-avatar-icon(style="min-width: 25px;") fingerprint
+                                div.md-list-item-text(layout="column")
+                                    span(translate="two")
+                            md-divider
+                            md-list-item       
+                                i.material-icons.md-avatar-icon(style="min-width: 25px;")  block
+                                div.md-list-item-text(layout="column")
+                                    span(translate="three")
+                            md-divider
+                            md-list-item     
+                                i.material-icons.md-avatar-icon(style="min-width: 25px;")  recent_actors  
+                                div.md-list-item-text(layout="column")
+                                    span(translate="four")
+                            md-divider
+                            md-list-item       
+                                i.material-icons.md-avatar-icon(style="min-width: 25px;")  vpn_key
+                                div.md-list-item-text(layout="column")
+                                    span(translate="five")
+                            md-divider
+                            md-list-item       
+                                i.material-icons.md-avatar-icon(style="min-width: 25px;")  cloud_done
+                                div.md-list-item-text(layout="column")
+                                    span(translate="six")
+                            md-divider
+                    br                
+                    md-content(layout="column" layout-gt-sm="row")
+                        md-button.md-primary.md-raised(ng-disabled="isWorking" ng-click="getMyKey()" translate="get" aria-label="get") 
+                        md-button.md-primary.md-raised(ng-disabled="isWorking" translate="send" ng-click="deliver()" aria-label="send") 
+                        md-button.md-primary(ng-disabled="isWorking" translate="revoke" ng-click="revoke()" aria-label="revoke") 
+        script(type="text/javascript").
+            function fadeIn(element){    
+                setTimeout(function(){
+                    var i = 1;
+                    var f = 0.05;
+                    element.style.opacity = parseFloat(element.style.opacity) - (f * i * i);
+                    i++;
+                    if (element.style.opacity > 0 && i < 50) fadeIn(element)
+                    else element.parentNode.removeChild(element);;
+                    }, 20);
+            }
+            document.addEventListener("DOMContentLoaded", function(event) {
+                var element = document.getElementById("loading"); 
+                element.style.opacity = 1.0;                
+                fadeIn(element);
+            });
 
         script(src="/bower_components/angular/angular.min.js")
+
+        script(src="/i18n/web-app/en.js")
+        script(src="/i18n/web-app/fr.js")
+        
+        script(src="/custom/colors")
+
         script(src="/bower_components/angular-aria/angular-aria.js")
         script(src="/bower_components/angular-animate/angular-animate.min.js")
         script(src="/bower_components/angular-material/angular-material.js")
         script(src="/bower_components/angular-messages/angular-messages.js")
-        script(src="/bower_components/angular-material-data-table/dist/md-data-table.min.js")
         script(src="/bower_components/angular-route/angular-route.min.js")
         script(src="/bower_components/angular-bootstrap/ui-bootstrap.js")
         script(src="/bower_components/angular-translate/angular-translate.min.js")
-        script(src="/bower_components/angular-qrcode/angular-qrcode.js")
-        script(src="/bower_components/qrcode-generator/js/qrcode.js")
-        script(src="/bower_components/intl-tel-input/build/js/intlTelInput.min.js")
-        script(src="/bower_components/intl-tel-input/lib/libphonenumber/build/utils.js")
-        script(src="/bower_components/ng-intl-tel-input/dist/ng-intl-tel-input.min.js")
-
+        script(src="/web-app/ng-sanitize.js")    
         script(src="/web-app/app.js")
-        script(src="/web-app/routes.js")
-        script(src="/web-app/filters/filters.js")
-        script(src="/web-app/create/controller.js")
-        script(src="/web-app/create/service.js")
-        script(src="/web-app/credentials/controller.js")
-        script(src="/web-app/credentials/service.js")
-        script(src="/web-app/import/controller.js")
-        script(src="/web-app/import/service.js")
-        script(src="/web-app/monitor/controller.js")
-        script(src="/web-app/monitor/service.js")
+        script(src="/web-app/filters.js")
         script(src="/web-app/modals/controller.js")
-        script(src="/web-app/modals/service.js")
-        script(src="/web-app/ng-sanitize.js")
-        script(src="/bower_components/ng-csv/build/ng-csv.min.js")
-
-    body(ng-app="identity").icons-docs(ng-controller="UserCtrl as UserCtrl")
-        input(type='hidden' id='hmngType' value=hmngType ng-model="hmngType")
-        div.modal.fade.bs-example-modal-lg(ng-controller="ModalCtrl")
-            script(type="text/ng-template" id="modalAboutContent.html")
-                md-dialog(aria-label="List dialog")
-                    md-toolbar
-                        div.md-toolbar-tools
-                            h2Account(translate="layout.details")
-                    md-dialog-content
-                        div.md-dialog-content
-                            table
-                                tbody
-                                    tr
-                                        th(style="padding: 5px 10px;" translate="layout.hmngServer")
-                                        td(style="padding: 5px 10px;")= server
-                                    tr
-                                        th(style="padding: 5px 10px;" translate="layout.ownerId")
-                                        td(style="padding: 5px 10px;")= ownerId
-                                    tr
-                                        th(style="padding: 5px 10px;" translate="layout.accessToken")
-                                        td(style="padding: 5px 10px;")= accessToken
-                    md-dialog-actions(layout="row")
-                        md-button(ng-click="close()" translate="button.close" aria-label="close")
-
-
-        header.md-page-header(ng-controller="HeaderCtrl")
-            div.header
-            md-toolbar.header.fixed(layout='row')
-
-                h1.logo.md-toolbar-tools
-                    img(src="/images/logo_nav.png" alt="Aerohive")
-                span(flex)
-                md-menu
-                    md-button(aria-label="language" ng-click="UserCtrl.openMenu($mdOpenMenu, $event)" style="min-width: 20px;")
-                        md-tooltip(md-direction="bottom" md-visible="tooltipVisible") {{"button.language" | translate}}
-                        md-icon(class="material-icons" aria-label="language") language
-                    md-menu-content
-                        md-menu-item
-                            md-button(ng-controller="ModalCtrl" ng-click="UserCtrl.translate('en')")
-                                span(style="display: inline-flex; margin-right: 5px;")
-                                    div.iti-flag.gb
-                                span English
-                        md-menu-item
-                            md-button(ng-controller="ModalCtrl" ng-click="UserCtrl.translate('fr')")
-                                span(style="display: inline-flex; margin-right: 5px;")
-                                    div.iti-flag.fr
-                                span Francais
-                md-menu
-                    md-button(aria-label="menu" ng-click="UserCtrl.openMenu($mdOpenMenu, $event)" style="min-width: 20px;")
-                        md-tooltip(md-direction="bottom" md-visible="tooltipVisible") {{"button.menu" | translate}}
-                        md-icon(class="material-icons" aria-label="menu") more_vert
-                    md-menu-content
-                        md-menu-item
-                            md-button(ng-controller="ModalCtrl" ng-click="open('about')")
-                                md-icon.material-icons(md-menu-align-target) info
-                                span(translate="layout.accountDetails")
-                        md-menu-item
-                            md-button(href="/logout/")
-                                md-icon(md-menu-align-target) exit_to_app
-                                span(translate="layout.logout")
-
-
-
-            md-toolbar.md-menu-toolbar(layout="row")
-
-                md-toolbar-filler(layout layout-align="center center" style="width:250px; background-color: white" hide-xs hide-sm hide-md)
-                md-menu-bar.main-menu
-                    md-button(href="#!/monitor/" ng-class="{cur: nav.isActive('monitor')}")
-                        md-icon.material-icons.md-24 recent_actors
-                        div(translate="layout.monitor")
-
-                    md-button(href="#!/credentials/" ng-class="{cur: nav.isActive('credentials')}")
-                        md-icon.material-icons.md-24 contacts
-                        div(translate="layout.credentials")
-
-                    md-button(href="#!/create/single" ng-class="{cur: nav.isActive('create')}")
-                        md-icon.material-icons.md-24 person_add
-                        div(translate="layout.create")
-
-                    md-button(href="#!/import/" ng-class="{cur: nav.isActive('import')}")
-                        md-icon.material-icons.md-24 file_download
-                        div(translate="layout.import")
-
-
-
-        div(id="main")
-            md-button.md-fab.md-warn.md-mini(aria-label="menu" style="position: fixed; bottom: 20px; left: 20px" ng-show="UserCtrl.showFab()" hide-gt-md ng-click='UserCtrl.sideNav("left")')
-                md-icon.material-icons.md-12 menu
-            ng-view
-
-
