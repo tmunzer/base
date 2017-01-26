@@ -3,23 +3,19 @@ html
     head
         title= title
         meta(name="viewport" content="width=device-width, initial-scale=1")
-
+        script(src="/i18n/login/en.js")
+        script(src="/i18n/login/fr.js")
         link(rel='stylesheet' href='/css/ah-tm.tags.css')
         link(rel="stylesheet" href="/bower_components/angular-material/angular-material.min.css")
         script(src="/bower_components/angular/angular.min.js")
-        script(src="/web-app/ng-sanitize.js")
         script(src="/bower_components/angular-aria/angular-aria.js")
         script(src="/bower_components/angular-animate/angular-animate.min.js")
         script(src="/bower_components/angular-material/angular-material.js")
         script(src="/bower_components/angular-messages/angular-messages.js")
-        script(src="/i18n/login/en.js")
-        script(src="/i18n/login/fr.js")
         script(src="/bower_components/angular-translate/angular-translate.min.js")
         script(src="/bower_components/angular-sanitize/angular-sanitize.min.js")
 
         script(src="/web-app/login.js")
-
-        link(rel='stylesheet' href='/css/ah-tm.login.css')
 
     body(ng-app="login")
         div(style="border-top: 2px solid rgb(255, 195, 15);" class="user-home-wrap" ng-controller="LoginCtrl")
@@ -36,7 +32,8 @@ html
                         div.md-toolbar-tools
                             h2(translate="OAUTH.TITLE")
                     md-content(layout="column")
-                        form(id="OAuth" action="https://cloud.aerohive.com/thirdpartylogin" method="get")
+                        form(id="OAuth" action="https://cloud.aerohive.com/services/oauth2/authorize" method="get")
+                            input(type="hidden" name="response_type" value="code")
                             input(type="hidden" name="client_id" value= client_id)
                             input(type="hidden" name="redirect_uri" value= redirect_uri)
                             div(style="margin: 30px;text-align: left;")

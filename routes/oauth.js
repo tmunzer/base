@@ -2,16 +2,18 @@ var express = require('express');
 var router = express.Router();
 var OAuth = require("./../bin/aerohive/api/oauth");
 var devAccount = require("../config").devAccount;
-var Error = require("./../routes/error");
+
 
 router.get('/reg', function (req, res) {
     if (req.session) {
         if (req.query.error) {
-            Error.render(req.query.error, "conf", req, res);
-        } else if (req.query.authCode) {
-            var authCode = req.query.authCode;
-            OAuth.getPermanentToken(authCode, devAccount, function (data) {
-                if (data.error) Error.render(data.error, "conf", req, res);
+            consoole.log(req.query.error);
+        } else if (req.query.code) {
+            var code = req.query.code;
+            OAuth.getPermanentToken(code, devAccount, function (data) {
+                console.log(data);
+                console.log("===============");
+                if (data.error) console.log(data.error);
                 else if (data.data) {
                     for (var owner in data.data) {
                         req.session.xapi = {
@@ -23,10 +25,11 @@ router.get('/reg', function (req, res) {
                         };
 
                     }
+                    console.log(req.session.xapi);
                     res.redirect('/web-app/');
                 }
             });
-        } else Error.render("Unknown error", "conf", req, res);
+        } else console.log("Unknown error");
     } else res.redirect("/");    
 });
 
